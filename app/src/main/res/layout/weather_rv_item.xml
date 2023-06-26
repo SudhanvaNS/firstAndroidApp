@@ -38,7 +38,29 @@
     <ImageView
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_below=""
-                />
+        android:layout_below="@id/idTVTemperature"
+        android:id="@+id/idIVCondition"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:padding="4dp"
+        android:src="@mipmap/ic_launcher"
+        />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text_Alignment="center"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:paddin="3dp"
+            android:layout_below="@id/idIVCondition"
+            android:id="@+id/idTVWindspeed"
+            android:TextColor="@color/white"
+            android:text="13"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+        />
+
+
+
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
