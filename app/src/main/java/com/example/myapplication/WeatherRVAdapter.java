@@ -30,7 +30,7 @@ public class WeatherRVAdapter extends RecyclerView.Adapter<WeatherRVAdapter.View
     @NonNull
     @Override
     public WeatherRVAdapter.ViewHold onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view= LayoutInflater.from(context).inflate(R.layout.weather_rv_item,parent, attachToRoot: false);
+        View view= LayoutInflater.from(context).inflate(R.layout.weather_rv_item,parent,  false);
         return  new  ViewHold(view);
 
     }
@@ -41,8 +41,8 @@ public class WeatherRVAdapter extends RecyclerView.Adapter<WeatherRVAdapter.View
         holder.temperatureTV.setText(modal.getTemperature()+"°c");
         Picasso.get().load("http:".concat(modal.getIcon())).into(holder.conditionIV);
         holder.windTV.setText(modal.getWindspeed()+"km/hr");
-        SimpleDateFormat input=new SimpleDateFormat(pattern: "yyyy-MM-dd hh:mm" );
-        SimpleDateFormat output=new SimpleDateFormat(pattern : "hh:mm aa");
+        SimpleDateFormat input=new SimpleDateFormat("yyyy-MM-dd hh:mm" );
+        SimpleDateFormat output=new SimpleDateFormat( "hh:mm aa");
         try{
             Date t=input.parse(modal.getTime());
             holder.timeTV.setText(output.format(t));
