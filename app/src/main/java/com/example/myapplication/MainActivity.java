@@ -23,11 +23,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
+import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputEditText;
+import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -121,18 +126,52 @@ public class MainActivity extends AppCompatActivity {
         return cityName;
     }
     private void getWeatherInfo(String cityName){
-        String ApiKey="48acc405f87a23cbba6f6d4d8913d210";
-        String url="https://api.openweathermap.org/data/2.5/weather?q="+cityName+"&appid="+ApiKey+"&units=metrics";
+
+        String url="https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=48acc405f87a23cbba6f6d4d8913d210&units=metric";
         cityNameTV.setText(cityName);
         RequestQueue requestQueue= Volley.newRequestQueue(MainActivity.this);
-//        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest( Request.Method.GET,url,null,new Response.Listener<JSONObject>({
-//                @Override
-//                public void  onResponse(JSONObject response){
-//                    loadingPB.setVisibility(View.GONE);
-//                    homeRLsetVisibility(View.VISIBLE);
-//        }
-//
-//    },);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override 
+                    public void onResponse(JSONObject response) {
+                        loadingPB.setVisibility(View.GONE);
+                        homeRL.setVisibility(View.VISIBLE);
+                        weatherRVModalArrayList.clear();
+                        try{
+
+                            String temperature=response.getJSONObject("main").getString("temp");
+                            temperatureTV.setText(temperature+" °C");
+                            String condition= response.getJSONArray("weather").getString(0);
+                            String icon= response.getJSONObject("weather").getString("icon");
+                            String windSpeed= response.getJSONObject("wind").getString("speed");
+
+                            Picasso.get().load("http:".concat(icon)).into(iconIV);
+                            WeatherRVModal weatherRVModal = new WeatherRVModal(condition, temperature,icon,windSpeed);
+                            weatherRVModalArrayList.add(weatherRVModal);
+                            weatherRVAdapter.notifyDataSetChanged();
+                            JSONObject sysObject = response.getJSONObject("sys");
+                            long sunriseTime = sysObject.getLong("sunrise");
+                            long sunsetTime = sysObject.getLong("sunset");
+                            long currentTime = System.currentTimeMillis() / 1000; // Convert to seconds
+                            boolean isDay = currentTime >= sunriseTime && currentTime < sunsetTime;
+                            if(isDay){
+                                Picasso.get().load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVLTn0pfQdZcbMRwIJDtd6AaPhWZJfLRfuDd0aiI5G7Dz4rlltuPRg1s7hjnSH9a04nH8&usqp=CAU").into(backIV);
+                            }else {
+                                Picasso.get().load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9r75bp0jcUKp2W9i7jseN9L16dGNdGmy8Bw&usqp=CAU").into(backIV);
+                            }
+
+                        }catch(JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MainActivity.this, "Please Enter a Valid City Name...", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        requestQueue.add(jsonObjectRequest);
 
     }
 }
